@@ -16,7 +16,7 @@ pub struct FileResult {
     pub name: String,
     pub extension: Option<String>,
     pub kind: String,
-    pub size: i64,
+    pub size: Option<i64>,
 }
 
 impl FileResult {
@@ -35,11 +35,10 @@ impl FileResult {
             _ => "file",
         };
 
-        let size = node
-            .metadata
-            .as_ref()
-            .map(|m| m.size())
-            .unwrap_or(-1);
+        let size = node.metadata.as_ref().map(|m| {
+            let s = m.size();
+            if s < 0 { None } else { Some(s) }
+        }).flatten();
 
         Self {
             path: path_display,
@@ -62,7 +61,7 @@ pub fn format_text(output: &SearchOutput) -> String {
             "[{}] {} ({} {})",
             i,
             r.path,
-            humansize(r.size as u64),
+            r.size.map(|s| humansize(s as u64)).unwrap_or_else(|| "—".into()),
             r.kind
         ));
     }
