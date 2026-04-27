@@ -1,38 +1,20 @@
 import { execFileSync } from "child_process";
-import { getPreferenceValues } from "@raycast/api";
 import type { SearchOutput } from "./types";
 
-interface Preferences {
-  binaryPath: string;
-  searchRoot: string;
-  resultLimit: string;
-  caseSensitive: boolean;
-}
-
-const DEFAULT_BINARY = "cardinal-cli";
-
-function getBinaryPath(): string {
-  const prefs = getPreferenceValues<Preferences>();
-  return prefs.binaryPath?.trim() || DEFAULT_BINARY;
-}
+const BINARY_PATH = "/Users/bytedance/bin/cardinal-cli";
+const SEARCH_ROOT = "/";
+const RESULT_LIMIT = "50";
 
 export function searchFiles(query: string): SearchOutput {
-  const binary = getBinaryPath();
-  const prefs = getPreferenceValues<Preferences>();
-
   const args = [
     "search",
     query,
     "--format", "json",
-    "--limit", prefs.resultLimit || "50",
-    "--path", prefs.searchRoot || "/",
+    "--limit", RESULT_LIMIT,
+    "--path", SEARCH_ROOT,
   ];
 
-  if (prefs.caseSensitive) {
-    args.push("--case-sensitive");
-  }
-
-  const stdout = execFileSync(binary, args, {
+  const stdout = execFileSync(BINARY_PATH, args, {
     maxBuffer: 10 * 1024 * 1024,
     timeout: 30000,
     encoding: "utf-8",
@@ -43,7 +25,7 @@ export function searchFiles(query: string): SearchOutput {
 
 export function isBinaryAvailable(): boolean {
   try {
-    execFileSync(getBinaryPath(), ["--version"], { timeout: 5000 });
+    execFileSync(BINARY_PATH, ["--version"], { timeout: 5000 });
     return true;
   } catch {
     return false;

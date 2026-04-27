@@ -96,7 +96,7 @@ export default function Command() {
       ) : results.length === 0 && query.trim() ? (
         <List.EmptyView title="No Results" description={`No files matching "${query}"`} icon={Icon.MagnifyingGlass} />
       ) : results.length === 0 ? (
-        <List.EmptyView title="Cardinal Search" description="Type to search your files" icon={Icon.MagnifyingGlass} />
+        <List.EmptyView icon={Icon.MagnifyingGlass} />
       ) : (
         results.map((file, index) => (
           <List.Item
